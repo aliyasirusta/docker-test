@@ -1,0 +1,31 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # Node.js Uygulaması Servisi
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:3000"
+    depends_on:
+      - redis
+    environment:
+      NODE_ENV: development
+    volumes:
+      - .:/app
+      - /app/node_modules # Bu satır, host'taki node_modules'ın üzerine yazılmasını engeller
+    command: npm run dev
+    restart: always
+
+  # Redis Veritabanı Servisi
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379" # İsteğe bağlı, Redis'e host'tan direkt erişmek için. Uygulama içeriden erişiyor.
+    volumes:
+      - redis-data:/data # Burası Redis verileri için Named Volume tanımlaması
+
+volumes:
+  redis-data: # redis-data adında bir named volume tanımla
